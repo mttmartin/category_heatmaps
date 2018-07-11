@@ -139,11 +139,16 @@ save_plots <- function(plots, path="./plots/")
 	}	
 }
 
-data <- get_data()
-data <- get_significant_data(data)
-ggplot_heatmap(data)
+test_example <- function()
+{
+	data <- get_data()
+	data <- get_significant_data(data)
+	ggplot_heatmap(data)
+	
+	GO_list <- get_gene_GOs(data$name)
+	tabulated_df <- get_main_categories(GO_list)
+	plots <- plot_categories(data,tabulated_df, GO_list)
+	save_plots(plots)
+}
 
-GO_list <- get_gene_GOs(data$name)
-tabulated_df <- get_main_categories(GO_list)
-plots <- plot_categories(data,tabulated_df, GO_list)
-save_plots(plots)
+#test_example()

@@ -1,7 +1,9 @@
 library(ComplexHeatmap)
 library(ggplot2)
 library(ensemblRestWrapper)
-setwd("/home/matthew/lab_root/mycobacterium/heatmap")
+
+### If using RStudio set this to your working directory
+# setwd("/home/user/category_heatmaps")
 
 # Reads in a vector of TSV files. It is expected that they have headers containing at least
 # ProteinID and logFC fields. Any other fields are ignored. The ProteinID should be in a 

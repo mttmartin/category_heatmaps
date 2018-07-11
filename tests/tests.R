@@ -43,6 +43,10 @@ test_that('get back GOs', {
 	expect_equal(length(GO_list) > 0, TRUE)
 })
 
+test_that('GO list has names', {
+	expect_equal(names(GO_list)[[1]], as.character(proteins[[1]]))
+})
+
 test_that('get back correct GOs', {
 	expect_equal("GO:0003677" %in% GO_list[[1]], TRUE)
 })

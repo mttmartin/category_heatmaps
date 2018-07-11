@@ -20,8 +20,6 @@ test_that('data types correct', {
 })
 
 
-
-
 context("Testing GO retrieval")
 proteins <- head(test_data$name, n=5)
 genes <- get_genes_from_proteins(proteins)
@@ -31,10 +29,20 @@ test_that('get back correct genes from protein IDs', {
 })
 
 test_that('removed unknown genes', {
-	removed_genes <- remove_unknown_genes(genes, proteins)
-	expect_equal(length(removed_genes), 4)
-	expect_equal("A0A0H3A355" %in% removed_genes, FALSE)
+	known_entries <- remove_unknown_genes(genes, proteins)
+	print("Length: ")
+	expect_equal(length(known_entries$gene_list), 4)
 	expect_equal("A0A0H3A355" %in% proteins, TRUE)
+	expect_equal("A0A0H3A355" %in% known_entries$proteins, FALSE)
 }) 
-context("Testing data selection and subsetting")
 
+context("Testing data selection and subsetting")
+GO_list <- get_gene_GOs(proteins)
+
+test_that('get back GOs', {
+	expect_equal(length(GO_list) > 0, TRUE)
+})
+
+test_that('get back correct GOs', {
+	expect_equal("GO:0003677" %in% GO_list[[1]], TRUE)
+})

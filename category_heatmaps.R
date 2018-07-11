@@ -101,16 +101,18 @@ get_genes_from_proteins <- function(proteins)
 
 remove_unknown_genes <- function(gene_list, proteins)
 {
+	known_entries = list()
 	unknown_genes <- sapply(gene_list, identical, character(0))
 	unknown_gene_names <- proteins[unknown_genes]
-	proteins <- proteins[!unknown_genes]
+	known_entries$proteins <- proteins[!unknown_genes]
 	
 	if (length(unknown_gene_names) > 0) {
 		print("Warning: Could not convert the following protein IDs to genes:") 
 		print(unknown_gene_names)
 	}
 	
-	gene_list <- gene_list[! unknown_genes]
+	known_entries$gene_list <- gene_list[! unknown_genes]
+	return (known_entries)
 	
 }
 
@@ -119,11 +121,10 @@ get_gene_GOs <- function(proteins)
 {
 	gene_list <- get_genes_from_proteins(proteins)
 	
-	# If could not convert to gene, let's let the user know, remove from vector, and continue
-	gene_list <- remove_unknown_genes(gene_list, proteins)
+	# If could not convert to gene, let's let the user know, remove from vectors, and continue
+	known_entries <- remove_unknown_genes(gene_list, proteins)
 
-	GO_list <- lapply(as.character(gene_list), get_GO_info)	
-	names(GO_list) <- as.character(proteins)
+	GO_list <- lapply(as.character(known_entries$gene_list), get_GO_info)	
  
 	return(GO_list)	
 }
@@ -135,15 +136,11 @@ save_plots <- function(plots, path="./plots")
 	}	
 }
 
-#data <- get_data()
-#data <- get_significant_data(data)
-#ggplot_heatmap(data)
+data <- get_data()
+data <- get_significant_data(data)
+ggplot_heatmap(data)
 
-
-#GO_list <- get_gene_GOs(data$name)
-#tabulated_df <- get_main_categories(GO_list)
-#plots <- plot_categories(data,tabulated_df, GO_list)
-#save_plots(plots)
-
-# TODO 1: Comparision function e.g. csv1 vs csv2 with side by side heatmaps
-# TODO 2: Combine multiple categories into single plot(?)
+GO_list <- get_gene_GOs(data$name)
+tabulated_df <- get_main_categories(GO_list)
+plots <- plot_categories(data,tabulated_df, GO_list)
+save_plots(plots)

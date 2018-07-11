@@ -1,12 +1,11 @@
 #!/usr/bin/env Rscript
 
-library(testthat)
 source("../category_heatmaps.R")
 
 
 context("Testing data loading")
 
-test_data_location <- "./tests/test_data.csv"
+test_data_location <- "./test_data.csv"
 test_data <- get_data(files=list(test_data_location))
 
 test_that('data dimensions correct', {
@@ -20,23 +19,23 @@ test_that('data types correct', {
 })
 
 
-context("Testing GO retrieval")
+context('Testing GO retrieval')
 proteins <- head(test_data$name, n=5)
 genes <- get_genes_from_proteins(proteins)
 
 test_that('get back correct genes from protein IDs', {
-	expect_equal(genes[[1]], "MAV_4335")	
+	expect_equal(genes[[1]], 'MAV_4335')	
 })
 
 test_that('removed unknown genes', {
 	known_entries <- remove_unknown_genes(genes, proteins)
-	print("Length: ")
+	print('Length: ')
 	expect_equal(length(known_entries$gene_list), 4)
-	expect_equal("A0A0H3A355" %in% proteins, TRUE)
-	expect_equal("A0A0H3A355" %in% known_entries$proteins, FALSE)
+	expect_equal('A0A0H3A355' %in% proteins, TRUE)
+	expect_equal('A0A0H3A355' %in% known_entries$proteins, FALSE)
 }) 
 
-context("Testing data selection and subsetting")
+context('Testing data selection and subsetting')
 GO_list <- get_gene_GOs(proteins)
 
 test_that('get back GOs', {
@@ -48,5 +47,6 @@ test_that('GO list has names', {
 })
 
 test_that('get back correct GOs', {
-	expect_equal("GO:0003677" %in% GO_list[[1]], TRUE)
+	expect_equal('GO:0003677' %in% GO_list[[1]], TRUE)
 })
+

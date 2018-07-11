@@ -1,4 +1,6 @@
 #!/usr/bin/env Rscript
 
 library(testthat)
-test_file('tests.R')
+
+setwd('./tests')
+test_file('./tests.R')

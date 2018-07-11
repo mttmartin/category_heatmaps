@@ -125,12 +125,13 @@ get_gene_GOs <- function(proteins)
 	known_entries <- remove_unknown_genes(gene_list, proteins)
 
 	GO_list <- lapply(as.character(known_entries$gene_list), get_GO_info)	
- 
+	names(GO_list) <- known_entries$proteins
 	return(GO_list)	
 }
 
-save_plots <- function(plots, path="./plots")
+save_plots <- function(plots, path="./plots/")
 {
+	dir.create(path, showWarnings = FALSE)
 	for (i in 1:length(plots)) {
 		ggsave(paste(path, i, ".pdf", sep=""), plots[[i]], device="pdf")
 	}	

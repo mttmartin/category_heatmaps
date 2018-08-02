@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 library(ComplexHeatmap)
 library(ggplot2)
 library(ensemblRestWrapper)
@@ -162,8 +164,8 @@ save_plots <- function(plots, path="./plots/")
 save_grid_plots <- function(plot1, plot2, name, path="./plots/")
 {
 	dir.create(path, showWarnings = FALSE)
-	p <- arrangeGrob(plots1[[i]], plots2[[j]], ncol=2)	
-	ggsave(paste(plot_path, name, ".pdf", sep=""), p, device="pdf")
+	p <- arrangeGrob(plot1, plot2, ncol=2)
+	ggsave(paste(path, name, ".pdf", sep=""), p, device="pdf")
 }
 
 
@@ -209,7 +211,6 @@ plot_comparison_heatmap <- function(files1, files2, save_location="./plots")
 		j <- match(names(plots1)[[i]], names(plots2))
 		save_grid_plots(plots1[[i]], plots2[[j]], name=names(plots1)[[i]])			
 	}
-	save_plots(combined_plots)
 }
 
 # This example shows how to create side-by-side heatmaps.
@@ -225,3 +226,6 @@ test_example_comparison_heatmaps <- function()
 	# They will be saved in whatever location you specify with save_location
 	plot_comparison_heatmap(experimental_treatment1, experimental_treatment2, save_location="./plots/")	
 }
+
+
+test_example_comparison_heatmaps()

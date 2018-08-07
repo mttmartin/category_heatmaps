@@ -55,7 +55,6 @@ ggplot_heatmap <- function(data, category="", do_use_legend=TRUE, plot_range=c(-
 plot_categories <- function(data, tabulated_categories_df, GO_list, do_use_category_label=FALSE, do_use_legend=FALSE, plot_range=c(-1,1)) {	
 	plot_list = list()
 	for (i in 1:length(tabulated_categories_df$GO)) {
-		print(i)
 		category = tabulated_categories_df$GO[[i]]
 	
 		if (do_use_category_label) {
@@ -71,7 +70,6 @@ plot_categories <- function(data, tabulated_categories_df, GO_list, do_use_categ
 			}	
 		}
 		plot_data <- data[data$name %in% wanted_genes,]
-		print(plot_data)
 		plot_list[[i]] <- ggplot_heatmap(plot_data, category=category_label, do_use_legend=do_use_legend, plot_range=plot_range)
 	}
 	names(plot_list) <- tabulated_categories_df$GO
@@ -166,7 +164,7 @@ save_grid_plots <- function(plots, name, path="./plots/")
 	dir.create(path, showWarnings = FALSE)
 	#p <- arrangeGrob(plots[[1]], plots[[2]], ncol=2)
 	#p <- arrangeGrob(plots, ncol=2)
-	p <- arrangeGrob(plots[[1]], plots[[2]], ncol=2)
+	p <- arrangeGrob(grobs=plots, ncol=2)
 	ggsave(paste(path, name, ".pdf", sep=""), p, device="pdf")
 }
 
@@ -192,10 +190,11 @@ get_plots <- function(data, plot_range, is_left=TRUE, is_right=FALSE)
 # The first parameter(input_files) should be a list of  lists containing
 # TSV files for each condition.
 # You can specify where they should be saved by save_location. 
-plot_comparison_heatmap <- function(input_files, save_location="./plots")
+plot_comparison_heatmap <- function(input_files, save_location="./plots/")
 {
-	data_min <- -Inf
-	data_max <- Inf
+	# First determine min/max for all data sets for use in defining color range for plots
+	data_min <- Inf
+	data_max <- -Inf
 	data_files <- list()
 	for (i in 1:length(input_files)) {
 		data_file <- get_data(files=input_files[[i]])
@@ -211,24 +210,17 @@ plot_comparison_heatmap <- function(input_files, save_location="./plots")
 		
 	}
 
-	#data1 <- get_data(files=files1)
-	#data2 <- get_data(files=files2)
-	
-	#data_min <- min(data1$logFC, data2$logFC)
-	#data_max <- max(data1$logFC, data2$logFC)
 	plots <- list()	
 	for (i in 1:length(data_files)) {
 		if (i == 1) {
 			new_plot <- get_plots(data_files[[i]], is_left=TRUE, plot_range=c(data_min,data_max))
-		} else if (i == length(data_files) {
+		} else if (i == length(data_files)) {
 			new_plot <- get_plots(data_files[[i]], is_left=FALSE, is_right=TRUE, plot_range=c(data_min,data_max))
 		} else {
 			new_plot <- get_plots(data_files[[i]], is_left=FALSE, plot_range=c(data_min,data_max))
 		}
 		plots[[i]] <- new_plot
 	}
-	#plots1 <- get_plots(data1, is_left=TRUE, plot_range=c(data_min,data_max))
-	#plots2 <- get_plots(data2, is_left=FALSE, plot_range=c(data_min,data_max))
 
 	plot_path = "./plots/"	
 	dir.create(plot_path, showWarnings = FALSE)
@@ -247,24 +239,15 @@ plot_comparison_heatmap <- function(input_files, save_location="./plots")
 		# get plots corresponding to this cateogry from all plots
 		category_plots <- list()
 		for (j in 1:length(plots)) {
-			plot <- plots[[j]][names(plots[[j]]) == common_categories[[i]]]
+			plot <- plots[[j]][[common_categories[[i]]]]
 			category_plots[[j]] <- plot
 		}
 		print(paste("Length of category_plots:", length(category_plots)))
 		print(category_plots)
-		#save_grid_plots(category_plots, name=common_categories[[i]])
-		save_grid_plots(plots, name=common_categories[[i]])
+		save_grid_plots(category_plots, name=common_categories[[i]])
+		#save_grid_plots(plots, name=common_categories[[i]])
 	}
 	print("Alive3")
-	#common_categories <- names(plots1) %in% names(plots2)
-	combined_plots = c()
-	#for (i in 1:length(plots1)) {
-	#	print(paste("i: ", i))
-	#	if (common_categories[[i]] == FALSE)
-	#		next
-	#	j <- match(names(plots1)[[i]], names(plots2))
-	#	save_grid_plots(plots1[[i]], plots2[[j]], name=names(plots1)[[i]])			
-	#}
 }
 
 # This example shows how to create side-by-side heatmaps.

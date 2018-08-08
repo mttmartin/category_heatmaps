@@ -161,11 +161,15 @@ save_plots <- function(plots, path="./plots/")
 }
 
 # Saves plots horizontally side-by-side
-save_grid_plots <- function(plot1, plot2, name, path="./plots/")
+save_grid_plots <- function(plot1, plot2, name, path="plots")
 {
 	dir.create(path, showWarnings = FALSE)
 	p <- arrangeGrob(plot1, plot2, ncol=2)
-	ggsave(paste(path, name, ".pdf", sep=""), p, device="pdf")
+	cwd = getwd()
+	filename <- paste(name, ".png", sep="")
+	filename <- gsub(":", "_", filename)
+	fp <- file.path(cwd,path,filename)
+	ggsave(fp, p, device="png")
 }
 
 

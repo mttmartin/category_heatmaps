@@ -6,7 +6,7 @@ library(ensemblRestWrapper)
 require(gridExtra)
 
 ### If using RStudio set this to your working directory
-# setwd("/home/user/category_heatmaps")
+setwd("/home/matthew/lab_root/mycobacterium/category_heatmap")
 
 # Reads in a vector of TSV files. It is expected that they have headers containing at least
 # ProteinID and logFC fields. Any other fields are ignored. The ProteinID should be in a 
@@ -97,7 +97,6 @@ get_main_categories <- function(GO_list) {
 		if (is.null(gene_GOs))
 			next
 		for (j in 1:length(gene_GOs)) {
-			
 			tabulated_df[tabulated_df$GO == gene_GOs[[j]],]$Count <- 1 + tabulated_df[tabulated_df$GO == gene_GOs[[j]],]$Count
 				
 		}
@@ -162,9 +161,7 @@ save_plots <- function(plots, path="./plots/")
 save_grid_plots <- function(plots, name, path="./plots/")
 {
 	dir.create(path, showWarnings = FALSE)
-	#p <- arrangeGrob(plots[[1]], plots[[2]], ncol=2)
-	#p <- arrangeGrob(plots, ncol=2)
-	p <- arrangeGrob(grobs=plots, ncol=2)
+	p <- arrangeGrob(grobs=plots, ncol=length(plots))
 	ggsave(paste(path, name, ".pdf", sep=""), p, device="pdf")
 }
 
@@ -178,9 +175,9 @@ get_plots <- function(data, plot_range, is_left=TRUE, is_right=FALSE)
 	if (is_left) {
 		plots <- plot_categories(data, tabulated_df, GO_list, do_use_category_label=TRUE, do_use_legend=FALSE, plot_range=plot_range)
 	} else if (is_right) {
-		plots <- plot_categories(data, tabulated_df, GO_list, do_use_category_label=FALSE, do_use_legend=FALSE, plot_range=plot_range)
-	} else {
 		plots <- plot_categories(data, tabulated_df, GO_list, do_use_category_label=FALSE, do_use_legend=TRUE, plot_range=plot_range)
+	} else {
+		plots <- plot_categories(data, tabulated_df, GO_list, do_use_category_label=FALSE, do_use_legend=FALSE, plot_range=plot_range)
 	}
 	
 	return (plots)
@@ -222,32 +219,22 @@ plot_comparison_heatmap <- function(input_files, save_location="./plots/")
 		plots[[i]] <- new_plot
 	}
 
-	plot_path = "./plots/"	
-	dir.create(plot_path, showWarnings = FALSE)
+	dir.create(save_location, showWarnings = FALSE)
 
-	print("Alive1")
-	common_categories <- c()
+	common_categories <- c(names(plots[[1]]))
 	for (i in 1:(length(plots)-1)) {
-		print(paste("i:", i))
-		common_categories <- intersect(names(plots[[i]]), names(plots[[i+1]]))
+		next_plots_intersect <- intersect(names(plots[[i]]), names(plots[[i+1]]))
+		common_categories <- intersect(common_categories, next_plots_intersect)
 	}	
-	print("Alive2")
-	print(length(common_categories))
-	print(paste(common_categories))
+	
 	for (i in 1:length(common_categories)) {
-		print(paste("i:",i))
 		# get plots corresponding to this cateogry from all plots
 		category_plots <- list()
 		for (j in 1:length(plots)) {
-			plot <- plots[[j]][[common_categories[[i]]]]
-			category_plots[[j]] <- plot
+			category_plots[[j]] <- plots[[j]][[common_categories[[i]]]]
 		}
-		print(paste("Length of category_plots:", length(category_plots)))
-		print(category_plots)
 		save_grid_plots(category_plots, name=common_categories[[i]])
-		#save_grid_plots(plots, name=common_categories[[i]])
 	}
-	print("Alive3")
 }
 
 # This example shows how to create side-by-side heatmaps.
@@ -258,8 +245,8 @@ test_example_comparison_heatmaps <- function()
 	# The files should have the protein IDs in one column and the logFC in another
 	experimental_treatment1 <- list("avium1.tsv")
 	experimental_treatment2 <- list("avium2.tsv")
-
-	input_files <- list(experimental_treatment1, experimental_treatment2)
+	experimental_treatment3 <- list("avium2.tsv")
+	input_files <- list(experimental_treatment1, experimental_treatment2, experimental_treatment3)
 
 	# This will create and save side-by-side comparisons
 	# They will be saved in whatever location you specify with save_location

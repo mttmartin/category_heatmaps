@@ -5,7 +5,7 @@ source("../category_heatmaps.R")
 
 context("Testing data loading")
 
-test_data_location <- "./test_data.csv"
+test_data_location <- "./tests/test_data.csv"
 test_data <- get_data(files=list(test_data_location))
 
 test_that('data dimensions correct', {

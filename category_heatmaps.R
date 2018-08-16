@@ -158,7 +158,7 @@ save_plots <- function(plots, path="./plots/")
 }
 
 # Saves plots horizontally side-by-side
-save_grid_plots <- function(plot1, plot2, name, path="plots")
+save_grid_plots <- function(plots, name, path="plots")
 {
 	dir.create(path, showWarnings = FALSE)
 	p <- arrangeGrob(grobs=plots, ncol=length(plots))
